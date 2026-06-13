@@ -3,6 +3,7 @@ import express from "express";
 import helmet from "helmet";
 import { apiLimiter } from "./middleware/rateLimit.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { fail } from "./utils/response.js";
 import { authRoutes } from "./routes/authRoutes.js";
 import { userRoutes } from "./routes/userRoutes.js";
 import { jobRoutes } from "./routes/jobRoutes.js";
@@ -38,6 +39,11 @@ export function createApp() {
   app.use("/api/uploads", uploadRoutes);
   app.use("/api/search", searchRoutes);
   app.use("/api/admin", adminRoutes);
+
+  // Catch-all 404 for unmatched API routes
+  app.use((req, res, next) => {
+    return fail(res, "Not Found", 404);
+  });
 
   app.use(errorHandler);
   return app;
